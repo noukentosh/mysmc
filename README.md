@@ -1,0 +1,2 @@
+# mysmc
+PHP + MYSQL CMS
