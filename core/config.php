@@ -1,0 +1,1 @@
+<?php $dbhost = "localhost";$dbuser = "root";$dbpass = "";$dbname = "mysmc";$dbprefix = "mysmc_";$username = "Admin";$password = "827ccb0eea8a706c4c34a16891f84e7b";?>

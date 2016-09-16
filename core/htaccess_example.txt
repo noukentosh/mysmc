@@ -1,0 +1,5 @@
+RewriteEngine On
+RewriteRule ^admin/add/([^/]*)$ /index.php?page=1&action=add&module=$1 [L]
+RewriteRule ^admin/edit/([^/]*)/([^/]*)$ /index.php?page=1&action=edit&module=$1&content=$2 [L]
+RewriteRule ^admin/remove/([^/]*)/([^/]*)$ /index.php?page=1&action=remove&module=$1&content=$2 [L]
+RewriteRule ^novosti-2/([^/]*)$ index.php?moduleonly=news&id=$1 [L]

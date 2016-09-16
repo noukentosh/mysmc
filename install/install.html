@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<!--
+  ~ Copyright (c) 2016. RocketBlow
+  -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Установщик MYSMC</title>
+    <link href="/resources/materialize/css/materialize.min.css" rel="stylesheet">
+    <script src="/resources/jquery/jquery-2.2.3.min.js"></script>
+    <script src="/resources/materialize/js/materialize.min.js"></script>
+    <style>
+        .loader-wrapper{
+            position: fixed;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            background-color: RGBA(0,0,0,0.5);
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body class="blue-grey lighten-5">
+    <div id="loader" class="valign-wrapper loader-wrapper hide">
+        <div class="valign center-block">
+            <div class="center-block" style="width: 64px;">
+                <div class="preloader-wrapper big active">
+                    <div class="spinner-layer spinner-blue-only">
+                        <div class="circle-clipper left">
+                            <div class="circle"></div>
+                        </div>
+                        <div class="gap-patch">
+                            <div class="circle"></div>
+                        </div>
+                        <div class="circle-clipper right">
+                            <div class="circle"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="white-text">Производится установка!</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col m6 offset-m3">
+            <div class="card-panel red lighten-3">
+                <h1 class="center-align blue-grey-text text-lighten-5">Установка MYSMC</h1>
+            </div>
+            <div id="adminpanel" class="card blue-grey lighten-4">
+                <div class="card-content black-text">
+                    <span class="card-title">Настройки администратора</span>
+                    <form>
+                        <div class="row">
+                            <div class="input-field col s12 offset-m3 m6">
+                                <input name="username" id="username" type="text" class="validate" required>
+                                <label for="username">Имя администратора</label>
+                            </div>
+                            <div class="input-field col s12 offset-m3 m6">
+                                <input name="password" id="password" type="password" class="validate" required>
+                                <label for="password">Пароль</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div id="dbpanel" class="card blue-grey lighten-4">
+                <div class="card-content black-text">
+                    <span class="card-title">Настройки подключения к базе данных</span>
+                    <div class="row">
+                        <form>
+                            <div class="input-field col s12 offset-m3 m6">
+                                <input name="dbhost" id="dbhost" type="text" class="validate" required>
+                                <label for="dbhost">MYSQL хост</label>
+                            </div>
+                            <div class="input-field col s12 offset-m3 m6">
+                                <input name="dbuser" id="dbuser" type="text" class="validate" required>
+                                <label for="dbuser">Пользователь</label>
+                            </div>
+                            <div class="input-field col s12 offset-m3 m6">
+                                <input name="dbpass" id="dbpass" type="password" class="validate">
+                                <label for="dbpass">Пароль</label>
+                            </div>
+                            <div class="input-field col s12 offset-m3 m6">
+                                <input name="dbname" id="dbname" type="text" class="validate" required>
+                                <label for="dbname">Название базы данных</label>
+                            </div>
+                            <div class="input-field col s12 offset-m3 m6">
+                                <input name="dbprefix" id="dbprefix" type="text" class="validate">
+                                <label for="dbprefix">Префикс для таблиц</label>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="card blue-grey lighten-4">
+                <div class="card-content black-text">
+                    <p id="errormsg" class="red-text hide"></p>
+                    <button id="checkconnect" class="btn">Проверить подключение</button>
+                    <button id="install" class="btn hide green">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $('#checkconnect').on('click', function(){
+            $.ajax("installer.php",{
+                method: "POST",
+                data: $('#dbpanel form').serialize()
+            }).done(function(data){
+                var answer = $.parseJSON(data);
+                if(answer.success){
+                    $('#dbpanel').removeClass("blue-grey");
+                    $('#dbpanel').removeClass("red");
+                    $('#dbpanel').addClass("green");
+                    $('#errormsg').hide();
+                }
+                else{
+                    $('#dbpanel').removeClass("blue-grey");
+                    $('#dbpanel').removeClass("green");
+                    $('#dbpanel').addClass("red");
+                    $('#errormsg').removeClass("hide");
+                    $('#errormsg').text(answer.error);
+                }
+            });
+            if($('#username').val() == "" || $('#password').val() == ""){
+                $('#adminpanel').removeClass("blue-grey");
+                $('#adminpanel').removeClass("green");
+                $('#adminpanel').addClass("red");
+            }else{
+                $('#adminpanel').removeClass("blue-grey");
+                $('#adminpanel').removeClass("red");
+                $('#adminpanel').addClass("green");
+            }
+            if($('#dbpanel').hasClass("green") && $('#adminpanel').hasClass("green")){
+                $('#checkconnect').hide();
+                $('#errormsg').hide();
+                $('#install').removeClass("hide");
+            }
+        });
+
+        $('#install').on('click', function(){
+            $('#loader').removeClass("hide");
+            $.ajax("installer.php",{
+                method: "POST",
+                data: $('#adminpanel form').serialize() + "&" + $('#dbpanel form').serialize() + "&install=1"
+            }).done(function(data){
+                if(data != ""){
+                    window.location = "/admin";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
